@@ -45,7 +45,7 @@ const SignUp = () => {
   useEffect(() => {
     const superEmail = localStorage.getItem("super-email");
     if (superEmail) {
-      window.location.href = "https://authmanager-client.netlify.app/dashboard";
+      window.location.href = "/dashboard";
     }
   }, []);
 
