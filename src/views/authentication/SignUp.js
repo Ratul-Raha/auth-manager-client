@@ -74,7 +74,7 @@ const SignUp = () => {
   const signup = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/users/register",
+        "https://authmanager-server.onrender.com/api/users/register",
         {
           name: name,
           email: email,

@@ -77,7 +77,7 @@ const CategoryWiseItemList = () => {
     } else {
       async function fetchData() {
         const result = await axios.post(
-          "http://localhost:3001/api/users/get-category-wise-item",
+          "https://authmanager-server.onrender.com/api/users/get-category-wise-item",
           {
             type: itemName,
             superEmail: superEmail,
@@ -94,7 +94,7 @@ const CategoryWiseItemList = () => {
     if (window.confirm("Do you really want to delete?")) {
       async function deleteData() {
         const result = await axios.post(
-          "http://localhost:3001/api/users/delete-item",
+          "http://authmanager-server.onrender.com/api/users/delete-item",
           {
             id: _id,
             type: itemName,

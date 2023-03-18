@@ -124,7 +124,7 @@ const Dashboard = () => {
     event.preventDefault();
     console.log(formData);
     axios
-      .post(`http://localhost:3001/api/users/add-item`, formData)
+      .post(`https://authmanager-server.onrender.com/api/users/add-item`, formData)
       .then((response) => {
         console.log(response);
         toast.success("Successfully added");

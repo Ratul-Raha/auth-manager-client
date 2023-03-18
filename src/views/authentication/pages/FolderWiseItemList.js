@@ -75,7 +75,7 @@ const FolderWiseItemList = () => {
     } else {
       async function fetchData() {
         const result = await axios.post(
-          "http://localhost:3001/api/users/get-folder-wise-item",
+          "https://authmanager-server.onrender.com/api/users/get-folder-wise-item",
           {
             folder: itemName,
             superEmail: superEmail,
@@ -92,7 +92,7 @@ const FolderWiseItemList = () => {
     alert("Do you really want to delete?");
     async function deleteData() {
       const result = await axios.post(
-        "http://localhost:3001/api/users/delete-item-by-Folder",
+        "https://authmanager-server.onrender.com/api/users/delete-item-by-Folder",
         {
           id: _id,
           folder: itemName,
