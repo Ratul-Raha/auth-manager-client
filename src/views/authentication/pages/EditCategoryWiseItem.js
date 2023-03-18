@@ -85,7 +85,7 @@ const EditCategoryWiseItem = () => {
     async function updateData() {
       setButtonDisabled(true);
       const result = await axios.post(
-        "http://authmanager-server.onrender.com/api/users/update-category-wise-item",
+        "https://authmanager-server.onrender.com/api/users/update-category-wise-item",
         {
           updatedItem: updatedItem,
           id: item,

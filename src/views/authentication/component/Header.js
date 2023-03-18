@@ -27,6 +27,8 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  const name = localStorage.getItem("super-name");
+
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -59,7 +61,7 @@ const Header = () => {
             >
               <AccountCircleIcon />
               <Typography variant="subtitle1" className={classes.username}>
-                Ratul
+                {name}
               </Typography>
             </IconButton>
             <Menu
