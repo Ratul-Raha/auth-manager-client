@@ -44,11 +44,11 @@ const Sidebar = () => {
   };
 
   const handleItemClick = (itemName) => {
-    window.location.href = `https://authmanager-client.netlify.app/category-wise-item-list/${itemName}`;
+    window.location.href = `/category-wise-item-list/${itemName}`;
   };
 
   const handleItemClick2 = (itemName) => {
-    window.location.href = `https://authmanager-client.netlify.app/folder-wise-item-list/${itemName}`;
+    window.location.href = `/folder-wise-item-list/${itemName}`;
   };
 
   return (

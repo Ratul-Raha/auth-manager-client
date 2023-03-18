@@ -46,7 +46,7 @@ const EditCategoryWiseItem = () => {
     
     const superEmail = localStorage.getItem("super-email");
     if (!superEmail) {
-      window.location.href = "https://authmanager-client.netlify.app/";
+      window.location.href = "/";
     }
 
     async function fetchData() {

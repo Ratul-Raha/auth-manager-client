@@ -39,7 +39,7 @@ const Header = () => {
     localStorage.removeItem("super-email");
     localStorage.removeItem("super-name");
     localStorage.removeItem("super-token");
-    window.location.href = "https://authmanager-client.netlify.app/";
+    window.location.href = "/";
   };
 
   return (
