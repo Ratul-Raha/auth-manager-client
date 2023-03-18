@@ -68,7 +68,7 @@ const SignIn = () => {
       localStorage.setItem("super-name", response.data.user.name);
       localStorage.setItem("super-token", response.data.token);
       // handle successful response
-      window.location.href = "/dashboard";
+      window.location.href = "https://admirable-alfajores-bd5f48.netlify.app/dashboard";
     } catch (error) {
       console.log(error.response.data); // handle error response
     }
