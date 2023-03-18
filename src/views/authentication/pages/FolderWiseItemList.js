@@ -71,7 +71,7 @@ const FolderWiseItemList = () => {
     const superEmail = localStorage.getItem("super-email");
 
     if (!superEmail) {
-      window.location.href = "/";
+      window.location.href = "https://authmanager-client.netlify.app/";
     } else {
       async function fetchData() {
         const result = await axios.post(
