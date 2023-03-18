@@ -4,11 +4,15 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 import { Link } from "react-router-dom";
+
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import FolderIcon from "@material-ui/icons/Folder";
 
 const drawerWidth = 240;
 
@@ -47,7 +51,6 @@ const Sidebar = () => {
     window.location.href = `/folder-wise-item-list/${itemName}`;
   };
 
-
   return (
     <Drawer
       className={classes.drawer}
@@ -59,36 +62,74 @@ const Sidebar = () => {
       <div className={classes.toolbar} />
       <List>
         <ListItem button component={Link} to="/dashboard">
-          <ListItemIcon>{/* add icon here */}</ListItemIcon>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
         <ListItem button onClick={handleClick}>
-          <ListItemIcon>{/* add icon here */}</ListItemIcon>
+          <ListItemIcon>
+            <FolderIcon />
+          </ListItemIcon>
           <ListItemText primary="Folders" />
           {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Folder 1" onClick={() => handleItemClick2("Folder1")} />
+            <ListItem
+              button
+              className={classes.nested}
+              style={{ paddingLeft: 80 }}
+            >
+              <ArrowRightAltIcon />
+              <ListItemText
+                primary="Folder 1"
+                onClick={() => handleItemClick2("Folder1")}
+              />
             </ListItem>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Folder 2" onClick={() => handleItemClick2("Folder2")} />
+            <ListItem
+              button
+              className={classes.nested}
+              style={{ paddingLeft: 80 }}
+            >
+              <ArrowRightAltIcon />
+              <ListItemText
+                primary="Folder 2"
+                onClick={() => handleItemClick2("Folder2")}
+              />
             </ListItem>
           </List>
         </Collapse>
         <ListItem button onClick={handleClick2}>
-          <ListItemIcon>{/* add icon here */}</ListItemIcon>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
           <ListItemText primary="Items" />
           {open2 ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </ListItem>
         <Collapse in={open2} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Social" onClick={() => handleItemClick("Social")} />
+            <ListItem
+              button
+              className={classes.nested}
+              style={{ paddingLeft: 80 }}
+            >
+              <ArrowRightAltIcon />
+              <ListItemText
+                primary="Social"
+                onClick={() => handleItemClick("Social")}
+              />
             </ListItem>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Official" onClick={() => handleItemClick("Official")} />
+            <ListItem
+              button
+              className={classes.nested}
+              style={{ paddingLeft: 80 }}
+            >
+              <ArrowRightAltIcon />
+              <ListItemText
+                primary="Official"
+                onClick={() => handleItemClick("Official")}
+              />
             </ListItem>
           </List>
         </Collapse>
