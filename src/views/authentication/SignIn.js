@@ -34,6 +34,7 @@ const SignIn = () => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     const superEmail = localStorage.getItem("super-email");
@@ -56,6 +57,7 @@ const SignIn = () => {
   };
 
   const login = async () => {
+    setButtonDisabled(true);
     try {
       const response = await axios.post(
         "https://authmanager-server.onrender.com/api/users/login",
@@ -67,6 +69,7 @@ const SignIn = () => {
       localStorage.setItem("super-email", response.data.user.email);
       localStorage.setItem("super-name", response.data.user.name);
       localStorage.setItem("super-token", response.data.token);
+      setButtonDisabled(false);
       // handle successful response
       window.location.href = "/dashboard";
     } catch (error) {
@@ -78,6 +81,9 @@ const SignIn = () => {
     <div className={classes.root}>
       <Card className={classes.card}>
         <CardContent>
+        <Typography variant="h5" component="h1" align="center">
+            AuthManager
+          </Typography>
           <Typography variant="h5" component="h1" align="center">
             Sign In
           </Typography>
@@ -114,6 +120,7 @@ const SignIn = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
+              disabled = {buttonDisabled}
             >
               Sign In
             </Button>
