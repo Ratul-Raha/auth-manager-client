@@ -12,7 +12,7 @@ import SignIn from "./views/authentication/SignIn";
 import Dashboard from "./views/authentication/pages/Dashboard";
 import Layout from "./views/authentication/component/Layout";
 import CategoryWiseItemList from "./views/authentication/pages/CategoryWiseItemList";
-import EditCategoryWiseItem from "./views/authentication/pages/EditCategoryWiseItem";
+import EditItem from "./views/authentication/pages/EditItem";
 import FolderWiseItemList from "./views/authentication/pages/FolderWiseItemList";
 
 function App() {
@@ -39,10 +39,10 @@ function App() {
             }
           />
           <Route
-            path="/edit-category-wise-item/:item"
+            path="/edit-item/:item"
             element={
               <Layout>
-                <EditCategoryWiseItem />
+                <EditItem />
               </Layout>
             }
           />

@@ -8,10 +8,11 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { useEffect } from "react";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,13 +35,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name can be at most 50 characters")
+    .required("Name is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+});
+
 const SignUp = () => {
   const classes = useStyles();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     const superEmail = localStorage.getItem("super-email");
@@ -49,32 +61,10 @@ const SignUp = () => {
     }
   }, []);
 
-  const handleChange = (e) => {
-    if (e.target.name === "email") {
-      setEmail(e.target.value);
-    } else if (e.target.name === "password") {
-      setPassword(e.target.value);
-    } else if (e.target.name === "name") {
-      setName(e.target.value);
-    } else if (e.target.name === "confirmPassword") {
-      setConfirmPassword(e.target.value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    setButtonDisabled(true);
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    signup();
-  };
-
-  const signup = async () => {
+  const signup = async (name, email, password) => {
     try {
       const response = await axios.post(
-        "https://authmanager-server.onrender.com/api/users/register",
+        "http://localhost:3001/api/users/register",
         {
           name: name,
           email: email,
@@ -82,16 +72,17 @@ const SignUp = () => {
         }
       );
       if (response.status === 200) {
-        setButtonDisabled(false);
         toast.success("Signup successful!");
-      }
-      else{
-        setButtonDisabled(false);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      } else {
         toast.error("Signup failed!");
       }
-      console.log(response.data); // handle successful response
+      console.log(response.data);
     } catch (error) {
-      console.log(error.response.data); // handle error response
+      console.log(error.response.data); 
+      toast.error(error.response.data)
     }
   };
 
@@ -101,73 +92,127 @@ const SignUp = () => {
         <ToastContainer />
         <CardContent>
           <Typography variant="h5" component="h1" align="center">
-            Sign Up
+            AuthManager
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label="Name"
-              name="name"
-              autoComplete="name"
-              autoFocus
-              value={name}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Master Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              id="confirmPassword"
-              autoComplete="current-password"
-              value={confirmPassword}
-              onChange={handleChange}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={buttonDisabled}
-            >
-              Sign Up
-            </Button>
-            <Link to="/">Already have account? Sign In</Link>
-          </form>
+          <Typography variant="h5" component="h1" align="center">
+            Signup
+          </Typography>
+          <Formik
+            initialValues={{
+              name: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={async (values, { setSubmitting }) => {
+              // Handle form submission here
+
+              try {
+                let response = await signup(
+                  values.name,
+                  values.email,
+                  values.password
+                );
+              } catch (error) {
+                setSubmitting(false);
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form noValidate onSubmit={handleSubmit}>
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  name="name"
+                  label="Name"
+                  autoComplete="name"
+                  autoFocus
+                  value={values.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.name && Boolean(errors.name)}
+                  helperText={touched.name && errors.name}
+                />
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  name="email"
+                  label="Email Address"
+                  autoComplete="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                />
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                />
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="confirm Password"
+                  type="confirmPassword"
+                  id="confirmPassword"
+                  autoComplete="confirmPassword"
+                  value={values.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={
+                    touched.confirmPassword && Boolean(errors.confirmPassword)
+                  }
+                  helperText={touched.confirmPassword && errors.confirmPassword}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={isSubmitting}
+                >
+                  Sign Up
+                </Button>
+                <Link to="/signup">Already have an account? Sign In</Link>
+              </form>
+            )}
+          </Formik>
         </CardContent>
       </Card>
     </div>

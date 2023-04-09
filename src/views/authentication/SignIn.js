@@ -8,6 +8,8 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { useEffect } from "react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,9 +34,6 @@ const useStyles = makeStyles((theme) => ({
 
 const SignIn = () => {
   const classes = useStyles();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     const superEmail = localStorage.getItem("super-email");
@@ -43,24 +42,19 @@ const SignIn = () => {
     }
   }, []);
 
-  const handleChange = (e) => {
-    if (e.target.name === "email") {
-      setEmail(e.target.value);
-    } else if (e.target.name === "password") {
-      setPassword(e.target.value);
-    }
-  };
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login(email, password);
-  };
-
-  const login = async () => {
-    setButtonDisabled(true);
+  const login = async (email, password) => {
     try {
       const response = await axios.post(
-        "https://authmanager-server.onrender.com/api/users/login",
+        "http://localhost:3001/api/users/login",
         {
           email: email,
           password: password,
@@ -69,11 +63,10 @@ const SignIn = () => {
       localStorage.setItem("super-email", response.data.user.email);
       localStorage.setItem("super-name", response.data.user.name);
       localStorage.setItem("super-token", response.data.token);
-      setButtonDisabled(false);
-      // handle successful response
       window.location.href = "/dashboard";
     } catch (error) {
-      console.log(error.response.data); // handle error response
+      console.log(error.response.data); 
+      
     }
   };
 
@@ -81,51 +74,82 @@ const SignIn = () => {
     <div className={classes.root}>
       <Card className={classes.card}>
         <CardContent>
-        <Typography variant="h5" component="h1" align="center">
+          <Typography variant="h5" component="h1" align="center">
             AuthManager
           </Typography>
           <Typography variant="h5" component="h1" align="center">
             Sign In
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={handleChange}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={handleChange}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled = {buttonDisabled}
-            >
-              Sign In
-            </Button>
-            <Link to="/signup">Don't have an account? Sign Up</Link>
-          </form>
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={validationSchema}
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                let response = await login(values.email, values.password);
+              } catch (error) {
+                setSubmitting(false);
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form noValidate onSubmit={handleSubmit}>
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  name="email"
+                  label="Email Address"
+                  autoComplete="email"
+                  autoFocus
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                />
+                <Field
+                  as={TextField}
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={isSubmitting}
+                >
+                  Sign In
+                </Button>
+                <Link to="/signup">Don't have an account? Sign Up</Link>
+              </form>
+            )}
+          </Formik>
         </CardContent>
       </Card>
     </div>
