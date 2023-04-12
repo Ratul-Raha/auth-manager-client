@@ -116,7 +116,6 @@ const FolderWiseItemList = () => {
   }, [itemName]);
 
   const onDelete = async (_id, name) => {
-    alert("Do you really want to delete?");
     async function deleteData() {
       const result = await axios.post(
         "http://localhost:3001/api/users/delete-item-by-Folder",
