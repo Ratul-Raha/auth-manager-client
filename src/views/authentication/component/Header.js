@@ -20,6 +20,12 @@ const useStyles = makeStyles((theme) => ({
   username: {
     marginRight: theme.spacing(1),
   },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up("md")]: {
+      display: "none",
+    },
+  },
 }));
 
 const Header = () => {
@@ -48,6 +54,15 @@ const Header = () => {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMenu}
+          >
+            <AccountCircleIcon />
+          </IconButton>
           <Typography variant="h6" className={classes.title}>
             My App
           </Typography>

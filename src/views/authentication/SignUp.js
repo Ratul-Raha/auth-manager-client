@@ -209,7 +209,16 @@ const SignUp = () => {
                 >
                   Sign Up
                 </Button>
-                <Link to="/signup">Already have an account? Sign In</Link>
+                <Link
+                  to="/signup"
+                  style={{
+                    textDecoration: "none",
+                    fontWeight: "bold",
+                    fontFamily: "Roboto",
+                  }}
+                >
+                  Already have an account? Sign In
+                </Link>
               </form>
             )}
           </Formik>

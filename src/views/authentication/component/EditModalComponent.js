@@ -22,7 +22,7 @@ import { Visibility, VisibilityOff } from "@material-ui/icons";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "auto",
-    width: "100%",
+    width: "450px",
     padding: theme.spacing(3),
   },
   input: {
@@ -40,8 +40,6 @@ function EditModalComponent({ item, modalOpen }) {
     setOpen(false);
     window.location.reload();
   } 
-
-  // original component code here, with item.id passed as a prop
 
   const classes = useStyles();
 

@@ -10,18 +10,17 @@ import Typography from "@material-ui/core/Typography";
 import { useEffect } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  cardContainer: {
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
-    marginTop: theme.spacing(8),
+    justifyContent: "center",
+    height: "100vh",
   },
   card: {
-    maxWidth: 400,
-    width: "100%",
-    margin: "0 auto",
+    width: 350,
   },
   form: {
     width: "100%",
@@ -65,14 +64,15 @@ const SignIn = () => {
       localStorage.setItem("super-token", response.data.token);
       window.location.href = "/dashboard";
     } catch (error) {
-      console.log(error.response.data); 
-      
+      console.log(error.response.data.errorMessage);
+      toast.error("Invalid username or password")
     }
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.cardContainer}>
       <Card className={classes.card}>
+        <ToastContainer />
         <CardContent>
           <Typography variant="h5" component="h1" align="center">
             AuthManager
@@ -146,7 +146,16 @@ const SignIn = () => {
                 >
                   Sign In
                 </Button>
-                <Link to="/signup">Don't have an account? Sign Up</Link>
+                <Link
+                  to="/signup"
+                  style={{
+                    textDecoration: "none",
+                    fontWeight: "bold",
+                    fontFamily: "Roboto",
+                  }}
+                >
+                  Don't have an account? Sign Up
+                </Link>
               </form>
             )}
           </Formik>

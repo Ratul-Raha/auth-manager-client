@@ -26,6 +26,7 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Button,
 } from "@material-ui/core";
 import EditModalComponent from "../component/EditModalComponent";
 
@@ -116,7 +117,7 @@ const CategoryWiseItemList = () => {
     if (window.confirm("Do you really want to delete?")) {
       async function deleteData() {
         const result = await axios.post(
-          "http://authmanager-server.onrender.com/api/users/delete-item",
+          "http://localhost:3001/api/users/delete-item-by-category",
           {
             id: _id,
             type: itemName,
@@ -158,12 +159,41 @@ const CategoryWiseItemList = () => {
     console.log(arrowUp);
   };
 
+  function exportToCsv(data) {
+    const csvRows = [];
+    const headers = Object.keys(data[0]);
+
+    csvRows.push(headers.join(","));
+
+
+    for (const item of data) {
+      const values = headers.map((header) => item[header]);
+      csvRows.push(values.join(","));
+    }
+
+    const csvData = new Blob([csvRows.join("\n")], { type: "text/csv" });
+
+
+    const linkElement = document.createElement("a");
+    linkElement.href = URL.createObjectURL(csvData);
+    linkElement.download = "data.csv";
+    linkElement.click();
+  }
+
   return (
     <div className={classes.root} style={{ marginLeft: "235px" }}>
       {isModalOpen && (
         <EditModalComponent item={selectedItemId} modalOpen={isModalOpen} />
       )}
       <h1>{itemName}</h1>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => exportToCsv(data)}
+        style={{ background:"green", marginBottom:"10px"}}
+      >
+        Export CSV
+      </Button>
       <TableContainer component={Paper} elevation={0}>
         <Table>
           <TableHead>
@@ -248,8 +278,8 @@ const CategoryWiseItemList = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          {data.length === 0 ? ( // check if data is still loading
-            isLoading ? ( // if still loading, render CircularProgress
+          {data.length === 0 ? ( 
+            isLoading ? ( 
               <TableRow>
                 <TableCell colSpan={9} align="center">
                   <CircularProgress />
@@ -261,7 +291,7 @@ const CategoryWiseItemList = () => {
                   <p>No data to show</p>
                 </TableCell>
               </TableRow>
-              // if not loading and no data, render message
+              
             )
           ) : (
             data.map((item, index) => (

@@ -8,6 +8,10 @@ import {
   IconButton,
   InputAdornment,
   TextareaAutosize,
+  Avatar,
+  Card,
+  CardContent,
+  Divider,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EditIcon from "@material-ui/icons/Edit";
@@ -64,6 +68,55 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
+  },
+  card: {
+    width: 500,
+    margin: "auto",
+    marginTop: 50,
+    padding: 20,
+    borderRadius: 10,
+    boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.16)",
+    backgroundColor: "#f8f8f8",
+  },
+  paper: {
+    position: "fixed",
+    top: 300,
+    left: 0,
+    bottom: 350,
+    right: 0,
+    margin: "auto",
+    width: "500px",
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    borderRadius: "10px",
+  },
+  addItemPaper: {
+    position: "fixed",
+    top: 100,
+    left: 0,
+    bottom: 100,
+    right: 0,
+    margin: "auto",
+    width: "500px",
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    borderRadius: "10px",
+  },
+  divider: {
+    marginTop: "10px",
+    marginBottom: "10px",
+  },
+  label: {
+    fontWeight: "bold",
+    marginRight: "10px",
+    color: "gray",
+    width: "100px",
+  },
+  value: {
+    display: "flex",
+    alignItems: "center",
   },
 }));
 
@@ -201,19 +254,33 @@ const Dashboard = () => {
     setFormData({ ...formData, password: generatePassword() });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     console.log(formData);
-    axios
+    const response = await axios
       .post(`http://localhost:3001/api/users/add-item`, formData)
       .then((response) => {
-        console.log(response);
+        console.log(response.data.data);
+        setData(response.data.data)
         toast.success("Successfully added");
+        setFormData({
+          name: "",
+          username: "",
+          url: "",
+          password: "",
+          notes: "",
+          type: "",
+          folder: "",
+          userEmail: userEmail,
+        });
         handleClose();
       })
       .catch((error) => {
         console.log(error);
       });
+      
+
+      
   };
 
   const handleCopyPassword = (password) => {
@@ -221,7 +288,29 @@ const Dashboard = () => {
     toast.success("Password copied to clipboard!");
   };
 
-  async function onDelete() {}
+  async function onDelete(itemId) {
+    const superEmail = localStorage.getItem("super-email");
+    if (!superEmail) {
+      window.location.href = "/";
+    }
+    async function deleteData() {
+      const result = await axios.post(
+        "http://localhost:3001/api/users/delete-dashboard-item",
+        {
+          id: itemId,
+          superEmail: superEmail,
+        }
+      );
+      if (result.status === 200) {
+        setData(result.data);
+        toast.success("Successfully deleted!");
+      }
+      setData(result.data);
+    }
+    if (window.confirm("Do you really want to delete?")) {
+      deleteData();
+    }
+  }
 
   return (
     <div className={classes.root} style={{ marginLeft: "235px" }}>
@@ -237,13 +326,12 @@ const Dashboard = () => {
       </Button>
       <Button
         variant="contained"
-        color="primary"
         startIcon={<ExportIcon />}
         className={classes.button}
         onClick={handleExportCsv}
-        style={{ backgroundColor: "#8DB600", color: "#FFFFFF" }}
+        style={{ backgroundColor: "green", color: "#FFFFFF" }}
       >
-        Export as CSV
+        Export CSV
       </Button>
       {isLoading ? (
         <div
@@ -277,21 +365,55 @@ const Dashboard = () => {
                 boxSizing: "border-box",
                 cursor: "pointer",
               }}
-              onClick={() => itemClick(item._id)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#F5F5F5";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#FFFFFF";
+              }}
+              title="Click to see details"
             >
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <div style={{ fontWeight: "bold", marginRight: "10px" }}>
-                  Name:
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  marginBottom: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <Avatar>{item.name.charAt(0)}</Avatar>
+                  <Typography variant="h6" style={{ marginLeft: "10px" }}>
+                    {item.name}
+                  </Typography>
                 </div>
-                <div>{item.name}</div>
-              </div>
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <div style={{ fontWeight: "bold", marginRight: "10px" }}>
-                  Username:
-                </div>
-                <div>{item.username}</div>
+                <TextField
+                  label="Username"
+                  variant="standard"
+                  value={item.username}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <TextField
+                  label="Url"
+                  variant="standard"
+                  value={item.url}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ marginTop: "5px" }}
+                />
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <IconButton size="small">
+                    <VisibilityIcon onClick={() => itemClick(item._id)}/>
+                  </IconButton>
                 <Link to={{ pathname: `/edit-item/${item._id}` }}>
                   <IconButton size="small">
                     <EditIcon />
@@ -319,29 +441,18 @@ const Dashboard = () => {
           >
             Item Details
           </Typography>
+          <Divider className={classes.divider} />
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              Name:
-            </div>
-            <div>{selectedItem?.name}</div>
+            <div className={classes.label}>Name:</div>
+            <div className={classes.value}>{selectedItem?.name}</div>
           </div>
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              Username:
-            </div>
-            <div>{selectedItem?.username}</div>
+            <div className={classes.label}>Username:</div>
+            <div className={classes.value}>{selectedItem?.username}</div>
           </div>
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              Password:
-            </div>
-            <div>
+            <div className={classes.label}>Password:</div>
+            <div className={classes.value}>
               {showPassword ? selectedItem?.password : "*********"}
               <IconButton
                 size="small"
@@ -366,28 +477,16 @@ const Dashboard = () => {
             </div>
           </div>
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              URL:
-            </div>
-            <div>{selectedItem?.url}</div>
+            <div className={classes.label}>URL:</div>
+            <div className={classes.value}>{selectedItem?.url}</div>
           </div>
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              Category:
-            </div>
-            <div>{selectedItem?.type}</div>
+            <div className={classes.label}>Category:</div>
+            <div className={classes.value}>{selectedItem?.type}</div>
           </div>
           <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div
-              style={{ fontWeight: "bold", marginRight: "10px", color: "gray" }}
-            >
-              Folder:
-            </div>
-            <div>{selectedItem?.folder}</div>
+            <div className={classes.label}>Folder:</div>
+            <div className={classes.value}>{selectedItem?.folder}</div>
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link to={{ pathname: `/edit-item/${selectedItem?._id}` }}>
@@ -408,7 +507,7 @@ const Dashboard = () => {
       </Modal>
 
       <Modal open={open} onClose={handleClose}>
-        <div className={classes.paper}>
+        <div className={classes.addItemPaper}>
           <Typography variant="h5">Add Item</Typography>
           <form className={classes.form} onSubmit={handleSubmit}>
             <FormControl variant="outlined" className={classes.input}>

@@ -26,8 +26,10 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Button,
 } from "@material-ui/core";
 import EditModalComponent from "../component/EditModalComponent";
+import Search from "../component/Search";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -113,7 +115,7 @@ const FolderWiseItemList = () => {
     }
   }, [itemName]);
 
-  const onDelete = async (_id) => {
+  const onDelete = async (_id, name) => {
     alert("Do you really want to delete?");
     async function deleteData() {
       const result = await axios.post(
@@ -122,11 +124,14 @@ const FolderWiseItemList = () => {
           id: _id,
           folder: itemName,
           superEmail: superEmail,
+          name: name,
         }
       );
       if (result.status === 200) {
+        console.log(result);
         setData(result.data);
         toast.success("Successfully deleted!");
+        window.location.reload();
       }
       setData(result.data);
     }
@@ -158,12 +163,42 @@ const FolderWiseItemList = () => {
     console.log(arrowUp);
   };
 
+  function exportToCsv(data) {
+    const csvRows = [];
+    const headers = Object.keys(data[0]);
+
+    csvRows.push(headers.join(","));
+
+
+    for (const item of data) {
+      const values = headers.map((header) => item[header]);
+      csvRows.push(values.join(","));
+    }
+
+    const csvData = new Blob([csvRows.join("\n")], { type: "text/csv" });
+
+
+    const linkElement = document.createElement("a");
+    linkElement.href = URL.createObjectURL(csvData);
+    linkElement.download = "data.csv";
+    linkElement.click();
+  }
+
   return (
     <div className={classes.root} style={{ marginLeft: "235px" }}>
       {isModalOpen && (
         <EditModalComponent item={selectedItemId} modalOpen={isModalOpen} />
       )}
       <h1>{itemName}</h1>
+      <Search data={data} setData={setData} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => exportToCsv(data)}
+        style={{marginLeft:"5px", background:"green"}}
+      >
+        Export CSV
+      </Button>
       <TableContainer component={Paper} elevation={0}>
         <Table>
           <TableHead>
@@ -248,8 +283,8 @@ const FolderWiseItemList = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          {data.length === 0 ? ( 
-            isLoading ? ( 
+          {data.length === 0 ? (
+            isLoading ? (
               <TableRow>
                 <TableCell colSpan={9} align="center">
                   <CircularProgress />
@@ -282,7 +317,7 @@ const FolderWiseItemList = () => {
 
                   <IconButton
                     color="secondary"
-                    onClick={() => onDelete(item.id)}
+                    onClick={() => onDelete(item.id, item.name)}
                   >
                     <Delete />
                   </IconButton>
