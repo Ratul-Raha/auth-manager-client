@@ -135,7 +135,9 @@ const FolderWiseItemList = () => {
       }
       setData(result.data);
     }
-    deleteData();
+    if (window.confirm("Do you really want to delete?")) {
+      deleteData();
+    }
   };
 
   const [sortDir, setSortDir] = useState("asc");

@@ -210,7 +210,7 @@ const SignUp = () => {
                   Sign Up
                 </Button>
                 <Link
-                  to="/signup"
+                  to="/"
                   style={{
                     textDecoration: "none",
                     fontWeight: "bold",

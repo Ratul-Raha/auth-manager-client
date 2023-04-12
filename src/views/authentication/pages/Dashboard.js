@@ -484,10 +484,6 @@ const Dashboard = () => {
             <div className={classes.label}>Category:</div>
             <div className={classes.value}>{selectedItem?.type}</div>
           </div>
-          <div style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={classes.label}>Folder:</div>
-            <div className={classes.value}>{selectedItem?.folder}</div>
-          </div>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link to={{ pathname: `/edit-item/${selectedItem?._id}` }}>
               <IconButton size="small">
